@@ -9,14 +9,23 @@ const P2P_PORT = process.env.P2P_PORT || 5001;
 //PEERS = ws://localhost:5002 P2P_PORT=5001 HTTP_PORT=3001 npm run dev
 const peers = process.env.PEERS ? process.env.PEERS.split(',') : []; 
 
-
+const MESSAGE_TYPE = {
+    chain: "CHAIN",
+    block: "BLOCK",
+    transaction: "TRANSACTION",
+    clear_transactions: "CLEAR_TRANSACTIONS"
+  };
+  
 //This class which will hold all the message handlers and event listeners.
 class P2pserver{
-    constructor(blockchain){
+    constructor(blockchain,transactionPool){
         // same blockchain that we use in our app.
         this.blockchain = blockchain;
         //list of sockets which it would be connected to at a given amount of time
         this.sockets = [];
+        //We can add an instance of our transaction-pool in the p2p-server. 
+        //This way our server can directly access the transactions.
+        this.transactionPool = transactionPool;
     }
 
     // create a new p2p server and connections
@@ -43,6 +52,7 @@ class P2pserver{
         console.log("Socket connected");
         // register a message event listener to the socket
         this.messageHandler(socket);
+        this.sendChain(socket);
         // on new connection send the blockchain chain to the peer
         socket.send(JSON.stringify(this.blockchain));
     }
@@ -62,18 +72,32 @@ class P2pserver{
         });
     }
 
-    messageHandler(socket){
-        //on recieving a message execute a callback function
-        socket.on('message',message =>{
-            const data = JSON.parse(message);
-            console.log("Received data from peer: ", data);
-            this.blockchain.replaceChain(data);
+    messageHandler(socket) {
+        socket.on("message", message => {
+          const data = JSON.parse(message);
+          console.log("Recieved data from peer:", data);
+    
+          switch (data.type) {
+            case MESSAGE_TYPE.chain:
+              this.blockchain.replaceChain(data.chain);
+              break;
+    
+            case MESSAGE_TYPE.transaction:
+               if (!this.transactionPool.transactionExists(data.transaction)) {
+                 this.transactionPool.addTransaction(data.transaction);
+                 this.broadcastTransaction(data.transaction);
+               }
+              break;
+          }
         });
-        
-    }
+      }
+
     //will be used to send our chain to a socket
     sendChain(socket){
-        socket.send(JSON.stringify(this.blockchain.chain));
+            socket.send(JSON.stringify({
+            type: MESSAGE_TYPE.chain,
+            chain: this.blockchain.chain 
+        }));
     }
 
     //will be used in our index file to synchronize the chains
@@ -82,6 +106,22 @@ class P2pserver{
             this.sendChain(socket);
         });
     }
+
+    //send the transaction to each socket
+    broadcastTransaction(transaction){
+        this.sockets.forEach(socket =>{
+            this.sendTransaction(socket,transaction);
+        });
+    }
+
+    //send a transaction to a single socket and call this function for each socket
+    sendTransaction(socket,transaction){
+         socket.send(JSON.stringify({
+             type: MESSAGE_TYPE.transaction,
+             transaction: transaction
+           })
+       );
+     }
 }
 
 module.exports = P2pserver;

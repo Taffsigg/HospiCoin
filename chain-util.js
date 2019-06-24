@@ -3,6 +3,7 @@ const EDDSA = require("elliptic").eddsa;
 const eddsa = new EDDSA("ed25519");
 //To generate these unique numbers
 const uuidV1 = require('uuid/v1');
+const SHA256 = require("crypto-js/sha256");
 
 //function to generate key pair
 class ChainUtil {

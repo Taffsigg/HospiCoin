@@ -1,8 +1,13 @@
+// wallet.js
+const Transaction = require("./transaction");
+const ChainUtil = require("../chain-util");
+
 class Wallet {
     constructor(secret) {
-      this.balance = 0;
+      //this.balance = 0;
       this.keyPair = ChainUtil.genKeyPair(secret);
       this.publicKey = this.keyPair.getPublic("hex");
+      this.balance = 100
     }
   
     toString() {
@@ -22,3 +27,5 @@ class Wallet {
         return transaction;
     }
 }
+
+module.exports = Wallet;
