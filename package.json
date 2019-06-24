@@ -1,6 +1,9 @@
+
 {
+  
   "name": "HospiCoin",
   "version": "1.0.0",
+  "dev": "nodemon ./app",
   "description": "Implementation of PoS for crypto-medical use",
   "main": "index.js",
   "scripts": {
@@ -21,6 +24,8 @@
     "nodemon": "^1.19.1"
   },
   "dependencies": {
-    "crypto-js": "^3.1.9-1"
+    "body-parser": "^1.19.0",
+    "crypto-js": "^3.1.9-1",
+    "express": "^4.17.1"
   }
 }
