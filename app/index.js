@@ -2,6 +2,9 @@
 const Blockchain = require('../blockchain/blockchain');
 const express = require('express');
 const bodyParser = require("body-parser");
+const P2pServer = require('./p2p-server.js');
+
+
 /*
 We will have multiple users running our app. To test this app on our
 own machine we need to run the app on a different port each time we
@@ -22,6 +25,10 @@ app.use(bodyParser.json());
 
 // create a new blockchain instance
 const blockchain = new Blockchain();
+
+// passing blockchain as a dependency
+const p2pserver = new P2pServer(blockchain);
+
 
 //EXPOSED APIs
 
@@ -44,3 +51,5 @@ app.post('/mine',(req,res)=>{
 app.listen(HTTP_PORT,()=>{
     console.log(`listening on port ${HTTP_PORT}`);
 })
+
+p2pserver.listen(); // starts the p2pserver
