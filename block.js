@@ -48,9 +48,33 @@ class Block {
         let timestamp = Date.now();
         const lastHash = lastBlock.hash;
         hash = Block.hash(timestamp, lastHash, data);
-    
-        return new this(timestamp, lastHash, hash, data);
-      }
 
-  }
+        return new this(timestamp, lastHash, hash, data);
+    }
+
+    //find the hash of the block, given the block instance. 
+    static blockHash(block){
+        //destructuring
+        const { timestamp, lastHash, data } = block;
+        return Block.hash(timestamp,lastHash,data);
+    }
+
+    //tells if the chain is valid or not
+    isValidChain(chain){
+        if(JSON.stringify(chain[0]) !== JSON.stringify(Block.genesis()))
+            return false;
+
+        //we recompute the hash of each block and compare it with the given hash of the block
+        for(let i = 1 ; i<chain.length; i++){
+            const block = chain[i];
+            const lastBlock = chain[i-1];
+            if((block.lastHash !== lastBlock.hash) || (
+                block.hash !== Block.blockHash(block)))
+            return false;
+        }
+
+        return true;
+
+    }
+}
 

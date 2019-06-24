@@ -9,7 +9,9 @@ class Blockchain{
 
     //ability to add more blocks to the chain
     addBlock(data){
+        //create a new block
         const block = Block.createBlock(this.chain[this.chain.length-1],data);
+        //pushing it to the chain
         this.chain.push(block);
     return block;
     }
