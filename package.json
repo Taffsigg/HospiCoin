@@ -19,5 +19,8 @@
   "homepage": "https://github.com/VincentRenotte/HospiCoin#readme",
   "devDependencies": {
     "nodemon": "^1.19.1"
+  },
+  "dependencies": {
+    "crypto-js": "^3.1.9-1"
   }
 }
