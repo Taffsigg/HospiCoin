@@ -1,7 +1,7 @@
 //need an instance of the blockchain in this API to send and receive block data.
-const Blockchain = require('../blockchain');
-const blockchain = new Blockchain();
+const Blockchain = require('../blockchain/blockchain');
 const express = require('express');
+const bodyParser = require("body-parser");
 /*
 We will have multiple users running our app. To test this app on our
 own machine we need to run the app on a different port each time we
@@ -25,14 +25,14 @@ const blockchain = new Blockchain();
 
 //EXPOSED APIs
 
-//api to get the blocks
+//api to get the blocks (send it to the user)
 app.get('/blocks',(req,res)=>{
 
     res.json(blockchain.chain);
 
 });
 
-//api to add blocks
+//api to add blocks (sends data in the request to create new block)
 app.post('/mine',(req,res)=>{
     const block = blockchain.addBlock(req.body.data);
     console.log(`New block added: ${block.toString()}`);
