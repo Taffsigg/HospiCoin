@@ -17,13 +17,3 @@ class ChainUtil {
 }
 module.exports = ChainUtil;
 
-class Transaction {
-    constructor() {
-      this.id = ChainUtil.id();
-      this.type = null;
-      this.input = null;
-      this.output = null;
-    }
-  }
-  
-  module.exports = Transaction;

@@ -52,6 +52,7 @@ app.post('/mine',(req,res)=>{
 // app server configurations
 app.listen(HTTP_PORT,()=>{
     console.log(`listening on port ${HTTP_PORT}`);
-})
+});
 
 p2pserver.listen(); // starts the p2pserver
+
