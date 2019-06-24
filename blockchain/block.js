@@ -59,23 +59,7 @@ class Block {
         return Block.hash(timestamp,lastHash,data);
     }
 
-    //tells if the chain is valid or not
-    isValidChain(chain){
-        if(JSON.stringify(chain[0]) !== JSON.stringify(Block.genesis()))
-            return false;
 
-        //we recompute the hash of each block and compare it with the given hash of the block
-        for(let i = 1 ; i<chain.length; i++){
-            const block = chain[i];
-            const lastBlock = chain[i-1];
-            if((block.lastHash !== lastBlock.hash) || (
-                block.hash !== Block.blockHash(block)))
-            return false;
-        }
-
-        return true;
-
-    }
 }
 
 module.exports = Block;

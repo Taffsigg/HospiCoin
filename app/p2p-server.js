@@ -9,13 +9,6 @@ const P2P_PORT = process.env.P2P_PORT || 5001;
 //PEERS = ws://localhost:5002 P2P_PORT=5001 HTTP_PORT=3001 npm run dev
 const peers = process.env.PEERS ? process.env.PEERS.split(',') : []; 
 
-const WebSocket = require('ws');
-
-//declare the peer to peer server port 
-const P2P_PORT = process.env.P2P_PORT || 5001;
-
-//list of address to connect to
-const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
 
 //This class which will hold all the message handlers and event listeners.
 class P2pserver{
@@ -45,10 +38,13 @@ class P2pserver{
 
     // after making connection to a socket
     connectSocket(socket){
-
         // push the socket too the socket array
         this.sockets.push(socket);
         console.log("Socket connected");
+        // register a message event listener to the socket
+        this.messageHandler(socket);
+        // on new connection send the blockchain chain to the peer
+        socket.send(JSON.stringify(this.blockchain));
     }
 
     connectToPeers(){
@@ -66,6 +62,26 @@ class P2pserver{
         });
     }
 
+    messageHandler(socket){
+        //on recieving a message execute a callback function
+        socket.on('message',message =>{
+            const data = JSON.parse(message);
+            console.log("Received data from peer: ", data);
+            this.blockchain.replaceChain(data);
+        });
+        
+    }
+    //will be used to send our chain to a socket
+    sendChain(socket){
+        socket.send(JSON.stringify(this.blockchain.chain));
+    }
+
+    //will be used in our index file to synchronize the chains
+    syncChain(){
+        this.sockets.forEach(socket =>{
+            this.sendChain(socket);
+        });
+    }
 }
 
 module.exports = P2pserver;

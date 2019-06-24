@@ -45,6 +45,8 @@ app.post('/mine',(req,res)=>{
     console.log(`New block added: ${block.toString()}`);
 
     res.redirect('/blocks');
+    //When we want to add a block, we sync the chain
+    p2pserver.syncChain();
 });
 
 // app server configurations
