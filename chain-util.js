@@ -14,6 +14,15 @@ class ChainUtil {
     static id(){
         return uuidV1();
     }
+
+    static hash(data){
+        return SHA256(JSON.stringify(data)).toString();
+    }
+
+    //To verify a signature we need to decrypt it using the public
+    static verifySignature(publicKey,signature,dataHash){
+        return ec.keyFromPublic(publicKey).verify(dataHash,signature);
+    }
 }
 module.exports = ChainUtil;
 
