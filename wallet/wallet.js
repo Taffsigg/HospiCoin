@@ -14,4 +14,11 @@ class Wallet {
     sign(dataHash) {
         return this.keyPair.sign(dataHash).toHex();
     }
+
+    //wallet is responsible for creating a transaction
+    createTransaction(to, amount, type, blockchain, transactionPool) {
+        let transaction = Transaction.newTransaction(this, to, amount,                                                                                                    type);
+        transactionPool.addTransaction(transaction);
+        return transaction;
+    }
 }
