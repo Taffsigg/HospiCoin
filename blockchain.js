@@ -15,6 +15,21 @@ class Blockchain{
         this.chain.push(block);
     return block;
     }
+
+    //we must replace our chain with the new longer chain.
+    replaceChain(newChain){
+        if(newChain.length <= this.chain.length){
+            console.log("Received chain is not longer than the current chain");
+            return;
+        }else if(!this.isValidChain(newChain)){
+            console.log("Received chain is invalid");
+            return;
+        }
+        
+        //Assign new chain of the current BC object to new chain received as arg
+        console.log("Replacing the current chain with new chain");
+        this.chain = newChain; 
+    }
 }
 
 module.exports = Blockchain;
