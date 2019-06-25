@@ -69,6 +69,60 @@ class Blockchain{
         //fee and are eligible to be elected as a leader.
         return this.stakes.getMax(this.validators.list);
     }
+
+    //checks if block is authentic and should be added to the chain
+    isValidBlock(block) {
+        const lastBlock = this.chain[this.chain.length - 1];
+        /**
+         * check hash
+         * check last hash
+         * check signature
+         * check leader
+         */
+        if (
+          block.lastHash === lastBlock.hash &&
+          block.hash === Block.blockHash(block) &&
+          Block.verifyBlock(block) &&
+          Block.verifyLeader(block, this.getLeader())
+        ) {
+          console.log("block valid");
+          this.addBlock(block);
+          return true;
+        } else {
+          return false;
+        }
+    }
+
+    //When a node does receive a valid block it must execute all 
+    //the transactions within the block to have the latest state.
+    executeTransactions(block) {
+        block.data.forEach(transaction => {
+          switch (transaction.type) {
+            case TRANSACTION_TYPE.transaction:
+              this.accounts.update(transaction);
+              this.accounts.transferFee(block, transaction);
+              break;
+            case TRANSACTION_TYPE.stake:
+              this.stakes.update(transaction);
+              this.accounts.decrement(
+                transaction.input.from,
+                transaction.output.amount
+              );
+              this.accounts.transferFee(block, transaction);
+    
+              break;
+            case TRANSACTION_TYPE.validator_fee:
+              if (this.validators.update(transaction)) {
+                this.accounts.decrement(
+                  transaction.input.from,
+                  transaction.output.amount
+                );
+                this.accounts.transferFee(block, transaction);
+              }
+              break;
+          }
+        });
+      }
 }
 
 module.exports = Blockchain;
