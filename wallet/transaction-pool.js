@@ -33,5 +33,11 @@ class TransactionPool {
         let exists = this.transactions.find(t => t.id === transaction.id);
         return exists;
     }
+
+    //After we have executed the block we must clear the pool 
+    //to remove the unwanted transactions from the pool.
+    clear() {
+        this.transactions = [];
+    }
 }
 module.exports = TransactionPool;
