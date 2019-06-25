@@ -22,9 +22,24 @@ class Wallet {
 
     //wallet is responsible for creating a transaction
     createTransaction(to, amount, type, blockchain, transactionPool) {
-        let transaction = Transaction.newTransaction(this, to, amount,                                                                                                    type);
+        this.balance = this.getBalance(blockchain);
+        if (amount > this.balance) {
+            console.log(
+                `Amount: ${amount} exceeds the current balance: ${this.balance}`
+            );
+            return;
+        }
+        let transaction = Transaction.newTransaction(this, to, amount, type);
         transactionPool.addTransaction(transaction);
         return transaction;
+    }
+
+    getBalance(blockchain) {
+        return blockchain.getBalance(this.publicKey);
+    }
+
+    getPublicKey() {
+        return this.publicKey;
     }
 }
 

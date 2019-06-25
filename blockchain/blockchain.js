@@ -47,6 +47,11 @@ class Blockchain{
         console.log("Replacing the current chain with new chain");
         this.chain = newChain; 
     }
+
+    //get the balance of any node and reuse the code in the wallet.
+    getBalance(publicKey) {
+        return this.accounts.getBalance(publicKey);
+      }
 }
 
 module.exports = Blockchain;
