@@ -8,8 +8,14 @@ class TransactionPool {
     }
 
     // push transactions in the list
+    //RETURN TRUE WHEN HIT THRESHOLD
     addTransaction(transaction) {
         this.transactions.push(transaction);
+        if (this.transactions.length >= TRANSACTION_THRESHOLD) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     validTransactions() {

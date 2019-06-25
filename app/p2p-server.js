@@ -82,12 +82,15 @@ class P2pserver{
               this.blockchain.replaceChain(data.chain);
               break;
     
-            case MESSAGE_TYPE.transaction:
-               if (!this.transactionPool.transactionExists(data.transaction)) {
-                 this.transactionPool.addTransaction(data.transaction);
-                 this.broadcastTransaction(data.transaction);
-               }
-              break;
+              case MESSAGE_TYPE.transaction:
+                if (!this.transactionPool.transactionExists(data.transaction)) {
+                   // check if pool is filled
+                   let thresholdReached = this.transactionPool.addTransaction(
+                     data.transaction
+                   );
+                   this.broadcastTransaction(data.transaction);
+                 }
+                 break;
           }
         });
       }
