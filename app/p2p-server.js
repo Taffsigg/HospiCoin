@@ -84,13 +84,28 @@ class P2pserver{
     
               case MESSAGE_TYPE.transaction:
                 if (!this.transactionPool.transactionExists(data.transaction)) {
-                   // check if pool is filled
-                   let thresholdReached = this.transactionPool.addTransaction(
-                     data.transaction
-                   );
-                   this.broadcastTransaction(data.transaction);
-                 }
-                 break;
+                  let thresholdReached = this.transactionPool.addTransaction(
+                    data.transaction
+                  );
+                  this.broadcastTransaction(data.transaction);
+                  if (thresholdReached) {
+                    if (this.blockchain.getLeader() == this.wallet.getPublicKey()) {
+                      console.log("Creating block");
+                      let block = this.blockchain.createBlock(
+                        this.transactionPool.transactions,
+                        this.wallet
+                      );
+                      this.broadcastBlock(block);
+                    }
+                  }
+                }
+              break;
+
+              case MESSAGE_TYPE.block:
+                if (this.blockchain.isValidBlock(data.block)) {
+                  this.broadcastBlock(data.block);
+                }
+                break;
           }
         });
       }
@@ -124,7 +139,22 @@ class P2pserver{
              transaction: transaction
            })
        );
-     }
+    }
+
+    broadcastBlock(block) {
+      this.sockets.forEach(socket => {
+        this.sendBlock(socket, block);
+      });
+    }
+  
+    sendBlock(socket, block) {
+      socket.send(
+        JSON.stringify({
+          type: MESSAGE_TYPE.block,
+          block: block
+        })
+      );
+    }
 }
 
 module.exports = P2pserver;

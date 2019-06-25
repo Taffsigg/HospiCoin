@@ -49,7 +49,12 @@ class Block {
         const lastHash = lastBlock.hash;
         hash = Block.hash(timestamp, lastHash, data);
 
-        return new this(timestamp, lastHash, hash, data);
+        // get the validators public key
+        let validator = wallet.getPublicKey();
+
+        // Sign the block
+        let signature = Block.signBlockHash(hash, wallet);
+        return new this(timestamp, lastHash, hash, data, validator, signature);
     }
 
     //find the hash of the block, given the block instance. 

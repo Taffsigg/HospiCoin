@@ -15,6 +15,16 @@ class Blockchain{
         this.chain.push(block);
     return block;
     }
+
+    //the leader can now create a block if it is elected and broadcast the block to the network.
+    createBlock(transactions, wallet) {
+        const block = Block.createBlock(
+          this.chain[this.chain.length - 1],
+          transactions,
+          wallet
+        );
+        return block;
+      }
     
     //tells if the chain is valid or not
     isValidChain(chain){
@@ -51,7 +61,14 @@ class Blockchain{
     //get the balance of any node and reuse the code in the wallet.
     getBalance(publicKey) {
         return this.accounts.getBalance(publicKey);
-      }
+    }
+
+    //returns the address of the node that has the maximum coins staked.
+    getLeader() {
+        //this.validators.list is the list of addresses of nodes that have paid the validator 
+        //fee and are eligible to be elected as a leader.
+        return this.stakes.getMax(this.validators.list);
+    }
 }
 
 module.exports = Blockchain;
